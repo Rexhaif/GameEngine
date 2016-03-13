@@ -1,27 +1,27 @@
 package com.killdon.gameengine;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferStrategy;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 /**
- * Created by gmfed on 12.03.2016.
+ * Created by gmfed on 13.03.2016.
  */
-public abstract class Game extends Canvas implements Runnable {
+public abstract class Game extends JFrame implements Runnable {
+
+    public Game(String title) {
+        super(title);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        setResizable(false);
+        setUndecorated(true);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
+        start();
+    }
 
     protected boolean running;
 
     protected static Room room;
-
-    protected static ArrayList<Integer> touchedKeys;
-    protected static ArrayList<Integer> pressedKeys;
-    protected static ArrayList<Integer> releasedKeys;
-
-    protected ArrayList<Integer> handlerTouchedKeys;
-    protected ArrayList<Integer> handlerReleasedKeys;
 
     public static String NAME = "TUTORIAL 1";
 
@@ -32,7 +32,7 @@ public abstract class Game extends Canvas implements Runnable {
 
         init();
         startEvent();
-        draw();
+        drawEvent();
         while(running) {
             if ((delta = System.currentTimeMillis() - lastTime) < (1000/room.speed) ) {
                 continue;
@@ -40,7 +40,7 @@ public abstract class Game extends Canvas implements Runnable {
             lastTime = System.currentTimeMillis();
             input();
             step();
-            draw();
+            drawEvent();
         }
     }
 
@@ -52,92 +52,30 @@ public abstract class Game extends Canvas implements Runnable {
     public void startEvent() {}
 
     protected final void init() {
-        touchedKeys = new ArrayList<Integer>();
-        pressedKeys = new ArrayList<Integer>();
-        releasedKeys = new ArrayList<Integer>();
-
-        handlerTouchedKeys = new ArrayList<Integer>();
-        handlerReleasedKeys = new ArrayList<Integer>();
-
-        addKeyListener(new KeyInputHandler());
     }
 
-    protected final void input() {
-        for (int i = 0; i < releasedKeys.size(); i++) {
-            if (!pressedKeys.contains(releasedKeys.get(i))) {
-                releasedKeys.remove(i--);
-            }
-        }
-        for (int i = 0; i < handlerReleasedKeys.size(); i++) {
-            if (pressedKeys.contains(handlerReleasedKeys.get(i)) && !releasedKeys.contains(handlerReleasedKeys.get(i))) {
-                pressedKeys.remove(pressedKeys.indexOf(handlerReleasedKeys.get(i)));
-                releasedKeys.add(handlerReleasedKeys.get(i));
-                if (touchedKeys.contains(handlerReleasedKeys.get(i))) {
-                    touchedKeys.remove(touchedKeys.indexOf(handlerReleasedKeys.get(i)));
-                }
-                handlerReleasedKeys.remove(i--);
-            }
-        }
-        pressedKeys.stream().filter(touchedKeys::contains).forEach(keyCode -> {
-            touchedKeys.remove(touchedKeys.indexOf(keyCode));
-        });
-        for (int i = 0; i < handlerTouchedKeys.size(); i++) {
-            if (!touchedKeys.contains(handlerTouchedKeys.get(i)) && !pressedKeys.contains(handlerTouchedKeys.get(i))) {
-                touchedKeys.add(handlerTouchedKeys.get(i));
-                pressedKeys.add(handlerTouchedKeys.get(i));
-                handlerTouchedKeys.remove(i--);
-            }
-        }
+    public void input() {
+        room.input();
     }
 
     public void step() {
         room.step();
     }
 
-    public void draw() {
-        BufferStrategy bs = getBufferStrategy();
-        if (bs == null) {
-            createBufferStrategy(2); //создаем BufferStrategy для нашего холста
-            requestFocus();
-            return;
-        }
-
-        Graphics g = bs.getDrawGraphics(); //получаем Graphics из созданной нами BufferStrategy
-        g.setColor(Color.white);
-        g.fillRect(0, 0, getWidth(), getHeight());
-
-        room.draw(g);
-        g.dispose();
-        bs.show();
+    public void drawEvent() {
+        room.drawEvent();
     }
 
     public static Room getRoom() {
         return room;
     }
 
-    protected class KeyInputHandler extends KeyAdapter {
-        public void keyPressed(KeyEvent e) {
-            if (!handlerTouchedKeys.contains(e.getKeyCode()) && !touchedKeys.contains(e.getKeyCode()) && !pressedKeys.contains(e.getKeyCode())) {
-                handlerTouchedKeys.add(e.getKeyCode());
-            }
-        }
-
-        public void keyReleased(KeyEvent e) {
-            if (!handlerReleasedKeys.contains(e.getKeyCode())) {
-                handlerReleasedKeys.add(e.getKeyCode());
-            }
-        }
-    }
-
-    public static boolean isKeyTouched(int keyCode) {
-        return touchedKeys.contains(keyCode);
-    }
-
-    public static boolean isKeyPressed(int keyCode) {
-        return pressedKeys.contains(keyCode);
-    }
-
-    public static boolean isKeyReleased(int keyCode) {
-        return releasedKeys.contains(keyCode);
+    protected final void setRoom(Room room) {
+        try {
+            remove(room);
+        } catch (NullPointerException e) {}
+        Game.room = room;
+        add(room, BorderLayout.CENTER);
+        pack();
     }
 }
