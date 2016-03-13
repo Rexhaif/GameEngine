@@ -14,14 +14,14 @@ public abstract class Game extends JFrame implements Runnable {
         setLayout(new BorderLayout());
         setResizable(false);
         setUndecorated(true);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
         start();
     }
 
     protected boolean running;
 
-    protected static Room room;
+    protected Room room;
 
     public static String NAME = "TUTORIAL 1";
 
@@ -66,15 +66,15 @@ public abstract class Game extends JFrame implements Runnable {
         room.drawEvent();
     }
 
-    public static Room getRoom() {
+    public Room getRoom() {
         return room;
     }
 
-    protected final void setRoom(Room room) {
+    public final void setRoom(Room room) {
         try {
             remove(room);
         } catch (NullPointerException e) {}
-        Game.room = room;
+        this.room = room;
         add(room, BorderLayout.CENTER);
         pack();
     }

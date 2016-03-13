@@ -1,7 +1,5 @@
 package com.killdon.gameengine;
 
-import com.sun.org.apache.xml.internal.security.c14n.helper.C14nHelper;
-
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
  * Created by gmfed on 13.03.2016.
  */
 public class Room extends Canvas{
-    private ArrayList<Object> objects;
+    private ArrayList<Instance> instances;
 
     public int width = 640;
     public int height = 480;
@@ -25,8 +23,16 @@ public class Room extends Canvas{
     protected ArrayList<Integer> handlerTouchedKeys;
     protected ArrayList<Integer> handlerReleasedKeys;
 
-    public Room(int width, int height) {
-        this.objects = new ArrayList<Object>();
+    public Room(Game game, int width, int height) {
+        this(game, width, height, null);
+    }
+
+    public Room(Game game, int width, int height, ArrayList<Instance> instances) {
+        if (instances != null) {
+            this.instances = instances;
+        } else {
+            this.instances = new ArrayList<Instance>();
+        }
         this.width = width;
         this.height = height;
         setPreferredSize(new Dimension(width, height));
@@ -41,8 +47,8 @@ public class Room extends Canvas{
         addKeyListener(new KeyInputHandler());
     }
 
-    public void addObject(Object object) {
-        objects.add(object);
+    public void addObject(Instance instance) {
+        instances.add(instance);
     }
 
     protected final void input() {
@@ -74,10 +80,8 @@ public class Room extends Canvas{
     }
 
     public void step() {
-        objects.forEach(com.killdon.gameengine.Object::stepProcedural);
-        for (Object object : objects) {
-            object.step();
-        }
+        instances.forEach(Instance::stepProcedural);
+        instances.forEach(Instance::step);
     }
 
     public void drawEvent() {
@@ -89,10 +93,10 @@ public class Room extends Canvas{
         }
 
         Graphics g = bs.getDrawGraphics(); //получаем Graphics из созданной нами BufferStrategy
-        g.setColor(Color.white);
+        g.setColor(Color.red);
         g.fillRect(0, 0, getWidth(), getHeight());
-        for (Object object : objects) {
-            object.draw(g);
+        for (Instance instance : instances) {
+            instance.draw(g);
         }
         g.dispose();
         bs.show();

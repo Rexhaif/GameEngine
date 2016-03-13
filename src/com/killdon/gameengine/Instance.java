@@ -5,16 +5,21 @@ import java.awt.*;
 /**
  * Created by gmfed on 11.03.2016.
  */
-public abstract class Object {
+public abstract class Instance {
+
+    protected Game game;
 
     protected Sprite sprite = null;
 
     protected int x = 0;
     protected int y = 0;
 
-    public Object() {}
+    public Instance(Game game) {
+        this.game = game;
+    }
 
-    public Object(Sprite sprite) {
+    public Instance(Game game, Sprite sprite) {
+        this.game = game;
         this.sprite = sprite;
     }
 
