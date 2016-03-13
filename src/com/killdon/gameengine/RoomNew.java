@@ -1,20 +1,21 @@
 package com.killdon.gameengine;
 
+import com.sun.org.apache.xml.internal.security.c14n.helper.C14nHelper;
+
 import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Created by gmfed on 12.03.2016.
+ * Created by gmfed on 13.03.2016.
  */
-public class Room {
-
+public class RoomNew extends Canvas{
     private ArrayList<Object> objects;
 
     public int width = 640;
     public int height = 480;
     public int speed = 30;
 
-    public Room(int width, int height) {
+    public RoomNew(int width, int height) {
         this.objects = new ArrayList<Object>();
         this.width = width;
         this.height = height;
@@ -40,6 +41,4 @@ public class Room {
             object.draw(g);
         }
     }
-
-
 }

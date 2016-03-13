@@ -24,12 +24,10 @@ public class Sprite implements Runnable{
     public Sprite(String path, int xOffset, int yOffset) {
         this.paths = new ArrayList<String>();
         this.images = new ArrayList<Image>();
-//        this.threadDownload = new Thread(this);
-//        this.threadDownload.start();
         this.addPath(path);
         this.xOffset = xOffset;
         this.yOffset = yOffset;
-        (new Thread(this)).start();
+        new Thread(this).start();
     }
 
     private ArrayList<String> paths;

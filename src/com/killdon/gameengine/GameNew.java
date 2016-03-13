@@ -1,16 +1,28 @@
 package com.killdon.gameengine;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
- * Created by gmfed on 12.03.2016.
+ * Created by gmfed on 13.03.2016.
  */
-public abstract class Game extends Canvas implements Runnable {
+public abstract class GameNew extends JFrame implements Runnable {
+
+    public GameNew(String title) throws HeadlessException {
+        super(title);
+        RoomNew room = new RoomNew(500,500);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        add(room, BorderLayout.CENTER);
+        pack();
+        setResizable(false);
+        setVisible(true);
+        start();
+    }
 
     protected boolean running;
 
@@ -140,4 +152,5 @@ public abstract class Game extends Canvas implements Runnable {
     public static boolean isKeyReleased(int keyCode) {
         return releasedKeys.contains(keyCode);
     }
+
 }
