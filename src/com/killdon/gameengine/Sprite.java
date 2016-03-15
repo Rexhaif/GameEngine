@@ -12,10 +12,14 @@ import java.util.ArrayList;
 /**
  * Created by gmfed on 11.03.2016.
  */
-public class Sprite implements Runnable{
+public abstract class Sprite implements Runnable{
 
     private boolean isDownloading = false;
     private Thread threadDownload;
+
+    public Sprite() {
+        this(null,0,0);
+    }
 
     public Sprite(String path) {
         this(path, 0, 0);
@@ -24,9 +28,12 @@ public class Sprite implements Runnable{
     public Sprite(String path, int xOffset, int yOffset) {
         this.paths = new ArrayList<String>();
         this.images = new ArrayList<Image>();
-        this.addPath(path);
+        if (path != null) {
+            this.addPath(path);
+        }
         this.xOffset = xOffset;
         this.yOffset = yOffset;
+        this.init();
         new Thread(this).start();
     }
 
@@ -43,6 +50,41 @@ public class Sprite implements Runnable{
     private float speed = 1f;
 
     private float index = 0;
+
+    public float getIndex() {
+        return index;
+    }
+
+    public void setIndex(float index) {
+        this.index = index;
+    }
+
+    public int getyOffset() {
+        return yOffset;
+    }
+
+    public void setyOffset(int yOffset) {
+        this.yOffset = yOffset;
+    }
+
+    public int getxOffset() {
+        return xOffset;
+    }
+
+    public void setxOffset(int xOffset) {
+        this.xOffset = xOffset;
+    }
+
+    public void setOffset(int xOffset, int yOffset) {
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void init() {}
 
     public int getWidth() {
         return this.width;

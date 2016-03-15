@@ -15,7 +15,7 @@ public abstract class Instance {
     protected int y = 0;
 
     public Instance(Game game) {
-        this.game = game;
+        this(game, null);
     }
 
     public Instance(Game game, Sprite sprite) {
@@ -23,18 +23,20 @@ public abstract class Instance {
         this.sprite = sprite;
     }
 
-    public void setSprite(Sprite sprite) {
+    public final void setSprite(Sprite sprite) {
         this.sprite = sprite;
     }
+
+    public void startEvent() {}
 
     public final void stepProcedural() {
         sprite.increaseIndex();
     }
 
-    public void step() {
+    public void stepEvent() {
     }
 
-    public void draw(Graphics g) {
+    public void drawEvent(Graphics g) {
         try {
             sprite.draw(g, x, y);
         } catch (NullPointerException e) {

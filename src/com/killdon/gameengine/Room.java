@@ -1,27 +1,25 @@
 package com.killdon.gameengine;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 
 /**
  * Created by gmfed on 13.03.2016.
  */
-public class Room extends Canvas{
+public abstract class Room {
+
     private ArrayList<Instance> instances;
 
-    public int width = 640;
-    public int height = 480;
-    public int speed = 30;
+    private Game game;
+    private int width = 640;
+    private int height = 480;
+    private int speed = 30;
 
-    protected ArrayList<Integer> touchedKeys;
-    protected ArrayList<Integer> pressedKeys;
-    protected ArrayList<Integer> releasedKeys;
+    private Color backgroundColor = Color.lightGray;
 
-    protected ArrayList<Integer> handlerTouchedKeys;
-    protected ArrayList<Integer> handlerReleasedKeys;
+    public Room(Game game) {
+        this(game,0,0,null);
+    }
 
     public Room(Game game, int width, int height) {
         this(game, width, height, null);
@@ -33,98 +31,69 @@ public class Room extends Canvas{
         } else {
             this.instances = new ArrayList<Instance>();
         }
+        this.game = game;
         this.width = width;
         this.height = height;
-        setPreferredSize(new Dimension(width, height));
-
-        touchedKeys = new ArrayList<Integer>();
-        pressedKeys = new ArrayList<Integer>();
-        releasedKeys = new ArrayList<Integer>();
-
-        handlerTouchedKeys = new ArrayList<Integer>();
-        handlerReleasedKeys = new ArrayList<Integer>();
-
-        addKeyListener(new KeyInputHandler());
+        init();
     }
 
-    public void addObject(Instance instance) {
+    public final int getWidth() {
+        return width;
+    }
+
+    public final void setWidth(int width) {
+        this.width = width;
+    }
+
+    public final int getHeight() {
+        return height;
+    }
+
+    public final void setHeight(int height) {
+        this.height = height;
+    }
+
+    public final int getSpeed() {
+        return speed;
+    }
+
+    public final void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public final void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void init() {}
+
+    public final void addInstance(Instance instance) {
         instances.add(instance);
     }
 
-    protected final void input() {
-        for (int i = 0; i < releasedKeys.size(); i++) {
-            if (!pressedKeys.contains(releasedKeys.get(i))) {
-                releasedKeys.remove(i--);
-            }
-        }
-        for (int i = 0; i < handlerReleasedKeys.size(); i++) {
-            if (pressedKeys.contains(handlerReleasedKeys.get(i)) && !releasedKeys.contains(handlerReleasedKeys.get(i))) {
-                pressedKeys.remove(pressedKeys.indexOf(handlerReleasedKeys.get(i)));
-                releasedKeys.add(handlerReleasedKeys.get(i));
-                if (touchedKeys.contains(handlerReleasedKeys.get(i))) {
-                    touchedKeys.remove(touchedKeys.indexOf(handlerReleasedKeys.get(i)));
-                }
-                handlerReleasedKeys.remove(i--);
-            }
-        }
-        pressedKeys.stream().filter(touchedKeys::contains).forEach(keyCode -> {
-            touchedKeys.remove(touchedKeys.indexOf(keyCode));
-        });
-        for (int i = 0; i < handlerTouchedKeys.size(); i++) {
-            if (!touchedKeys.contains(handlerTouchedKeys.get(i)) && !pressedKeys.contains(handlerTouchedKeys.get(i))) {
-                touchedKeys.add(handlerTouchedKeys.get(i));
-                pressedKeys.add(handlerTouchedKeys.get(i));
-                handlerTouchedKeys.remove(i--);
-            }
-        }
+    public final ArrayList<Instance> getInstances() {
+        return instances;
     }
 
-    public void step() {
+    public final void setInstances(ArrayList<Instance> instances) {
+        this.instances = instances;
+    }
+
+    public final void stepEvent() {
         instances.forEach(Instance::stepProcedural);
-        instances.forEach(Instance::step);
+        instances.forEach(Instance::stepEvent);
     }
 
-    public void drawEvent() {
-        BufferStrategy bs = getBufferStrategy();
-        if (bs == null) {
-            createBufferStrategy(2); //создаем BufferStrategy для нашего холста
-            requestFocus();
-            return;
-        }
-
-        Graphics g = bs.getDrawGraphics(); //получаем Graphics из созданной нами BufferStrategy
-        g.setColor(Color.red);
-        g.fillRect(0, 0, getWidth(), getHeight());
-        for (Instance instance : instances) {
-            instance.draw(g);
-        }
-        g.dispose();
-        bs.show();
+    public final Color getBackgroundColor() {
+        return backgroundColor;
     }
 
-    public boolean isKeyTouched(int keyCode) {
-        return touchedKeys.contains(keyCode);
-    }
-
-    public boolean isKeyPressed(int keyCode) {
-        return pressedKeys.contains(keyCode);
-    }
-
-    public boolean isKeyReleased(int keyCode) {
-        return releasedKeys.contains(keyCode);
-    }
-
-    protected class KeyInputHandler extends KeyAdapter {
-        public void keyPressed(KeyEvent e) {
-            if (!handlerTouchedKeys.contains(e.getKeyCode()) && !touchedKeys.contains(e.getKeyCode()) && !pressedKeys.contains(e.getKeyCode())) {
-                handlerTouchedKeys.add(e.getKeyCode());
-            }
-        }
-
-        public void keyReleased(KeyEvent e) {
-            if (!handlerReleasedKeys.contains(e.getKeyCode())) {
-                handlerReleasedKeys.add(e.getKeyCode());
-            }
-        }
+    public final void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
     }
 }
