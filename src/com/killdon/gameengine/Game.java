@@ -165,12 +165,16 @@ public abstract class Game extends JFrame implements Runnable {
                 setUndecorated(true);
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
                 setVisible(true);
+                toFront();
+                window.requestFocus();
             } else {
                 dispose();
                 setUndecorated(!frame);
                 pack();
                 setLocationRelativeTo(null);
                 setVisible(true);
+                toFront();
+                window.requestFocus();
             }
         }
     }
@@ -180,7 +184,6 @@ public abstract class Game extends JFrame implements Runnable {
     }
 
     public void setFrame(boolean frame) {
-        System.out.println("Frame was " + this.frame);
         if (this.frame != frame) {
             this.frame = frame;
             if (!fullScreen) {
@@ -188,9 +191,10 @@ public abstract class Game extends JFrame implements Runnable {
                 setUndecorated(!this.frame);
                 pack();
                 setVisible(true);
+                toFront();
+                window.requestFocus();
             }
         }
-        System.out.println("Frame now is " + this.frame);
     }
 
     public void exit() {
